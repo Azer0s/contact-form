@@ -1,8 +1,18 @@
+use std::future::Future;
+use std::pin::Pin;
 use crate::domain::contact_details::ContactDetails;
 use crate::domain::serialization_error::SerializationError;
 use lambda_http::{http, Body, Error, Request, Response};
+use crate::common::Common;
 
-pub async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
+pub fn handler<'a>(common: &'a Common) -> impl Fn(Request) -> Pin<Box<dyn Future<Output = Result<Response<Body>, Error>> + Send + 'a>> + 'a {
+    move |request: Request| {
+        let future = function_handler(common, request);
+        Box::pin(future)
+    }
+}
+
+async fn function_handler(_common: &Common, event: Request) -> Result<Response<Body>, Error> {
     if event.method() != http::method::Method::POST {
         return Ok(Response::builder()
             .status(405)
