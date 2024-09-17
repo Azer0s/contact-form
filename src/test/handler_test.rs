@@ -6,9 +6,11 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 
-async fn setup_test() -> impl Fn(Request) -> Pin<Box<dyn Future<Output = Result<Response<Body>, Error>> + Send>> {
+async fn setup_test() -> impl Fn(Request) -> Pin<Box<dyn Future<Output = Result<Response<Body>, Error>>>> {
     let repository = crate::persistence::contact_details::implementation::MockRepository;
-    let common = Arc::new(Common::new(Box::new(repository)));
+    let service = crate::service::email::implementation::MockEmailService;
+    
+    let common = Arc::new(Common::new(Box::new(repository), Box::new(service)));
 
     move |request: Request| {
         let common = Arc::clone(&common);
