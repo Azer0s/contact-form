@@ -1,24 +1,21 @@
-use std::future::Future;
-use std::pin::Pin;
-use std::sync::Arc;
-use aws_config::BehaviorVersion;
+use crate::common::Common;
 use crate::domain::contact_details::ContactDetails;
 use crate::handler;
 use lambda_http::{http, Body, Error, Request, Response};
-use crate::common::Common;
+use std::future::Future;
+use std::pin::Pin;
+use std::sync::Arc;
 
-async fn setup_test<'a>() -> impl Fn(Request) -> Pin<Box<dyn Future<Output=Result<Response<Body>, Error>> + Send + 'a>> {
-    let sdk_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
-    let client = aws_sdk_dynamodb::Client::new(&sdk_config);
-    let common = Arc::new(Common::new(client));
+async fn setup_test() -> impl Fn(Request) -> Pin<Box<dyn Future<Output = Result<Response<Body>, Error>> + Send>> {
+    let repository = crate::persistence::contact_details::implementation::MockRepository;
+    let common = Arc::new(Box::new(Common::new(repository)));
 
     move |request: Request| {
-        let future = {
-            let common = common.clone();
-            async move {
-                let function_handler = handler(&common);
-                function_handler(request).await
-            }
+        let common = Arc::clone(&common);
+
+        let future = async move {
+            let function_handler = handler(&common);
+            function_handler(request).await
         };
 
         Box::pin(future)
