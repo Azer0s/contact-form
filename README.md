@@ -10,8 +10,8 @@ cargo lambda deploy --region eu-central-1 --enable-function-url
 This will also generate an IAM role for the function. This role needs to be able to PutItem to the DynamoDB table.
 
 ## TODO
-- [ ] Add a terraform script
-  - [ ] Create a DynamoDB table
+- [x] Add a terraform script
+  - [x] Create a DynamoDB table
   - [ ] Build the function
   - [ ] Deploy the function
   - [ ] Add the IAM role to the function
