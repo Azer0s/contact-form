@@ -1,10 +1,9 @@
 use crate::common::Common;
 use crate::domain::contact_details::ContactDetails;
 use crate::domain::serialization_error::SerializationError;
-use crate::persistence;
 use lambda_http::{Body, Error, Request, Response};
 
-pub async fn func<T: persistence::contact_details::repository::Repository>(common: &Common<T>, event: Request) -> Result<Response<Body>, Error> {
+pub async fn func(common: &Common, event: Request) -> Result<Response<Body>, Error> {
     let contact_details = match ContactDetails::try_from(event) {
         Ok(contact_details) => contact_details,
         Err(SerializationError::NameEmpty) => {

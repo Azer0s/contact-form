@@ -3,6 +3,7 @@ use aws_sdk_dynamodb::types::AttributeValue;
 use aws_sdk_dynamodb::Client;
 use std::error::Error;
 use std::sync::Arc;
+use async_trait::async_trait;
 use crate::persistence::contact_details::repository::Repository;
 
 pub struct DynamoDbRepository {
@@ -11,12 +12,13 @@ pub struct DynamoDbRepository {
 
 impl DynamoDbRepository {
     pub fn new(db: Arc<Client>) -> DynamoDbRepository {
-        DynamoDbRepository { 
+        DynamoDbRepository {
             db
         }
     }
 }
 
+#[async_trait]
 impl Repository for DynamoDbRepository {
     async fn create(&self, contact_details: ContactDetails) -> Result<String, Box<dyn Error>> {
         let id = uuid::Uuid::new_v4().to_string();
@@ -37,6 +39,7 @@ impl Repository for DynamoDbRepository {
 
 pub struct MockRepository;
 
+#[async_trait]
 impl Repository for MockRepository {
     async fn create(&self, _contact_details: ContactDetails) -> Result<String, Box<dyn Error>> {
         println!("MockRepository::create");

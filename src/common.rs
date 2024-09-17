@@ -1,11 +1,11 @@
 use crate::persistence::contact_details;
 
-pub struct Common<T: contact_details::repository::Repository> {
-    pub contact_details_repository: T
+pub struct Common {
+    pub contact_details_repository: Box<dyn contact_details::repository::Repository>
 }
 
-impl<T: contact_details::repository::Repository> Common<T> {
-    pub fn new(contact_details_repository: T) -> Common<T> {
+impl Common {
+    pub fn new(contact_details_repository: Box<dyn contact_details::repository::Repository>) -> Self {
         Common {
             contact_details_repository
         }

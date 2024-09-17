@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 async fn setup_test() -> impl Fn(Request) -> Pin<Box<dyn Future<Output = Result<Response<Body>, Error>> + Send>> {
     let repository = crate::persistence::contact_details::implementation::MockRepository;
-    let common = Arc::new(Box::new(Common::new(repository)));
+    let common = Arc::new(Common::new(Box::new(repository)));
 
     move |request: Request| {
         let common = Arc::clone(&common);

@@ -18,7 +18,7 @@ async fn main() -> Result<(), Error> {
     let sdk_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
     let client = aws_sdk_dynamodb::Client::new(&sdk_config);
     let db = contact_details::implementation::DynamoDbRepository::new(Arc::new(client));
-    let common = common::Common::new(db);
+    let common = common::Common::new(Box::new(db));
 
     run(service_fn(handler(&common))).await
 }
