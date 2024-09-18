@@ -6,4 +6,5 @@ resource "aws_lambda_function" "main" {
   architectures     = ["x86_64"]
   s3_bucket = aws_s3_bucket.contact_me_lambda_bucket.bucket
   s3_key = aws_s3_object.contact_me_lambda_zip.key
+  source_code_hash = filemd5(local.filename)
 }

@@ -2,22 +2,6 @@ use crate::common::Common;
 use crate::domain::contact_details::ContactDetails;
 use crate::domain::serialization_error::SerializationError;
 use lambda_http::{Body, Error, Request, Response};
-use crate::domain;
-
-const EMAIL_TEMPLATE: &str = r#"
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Hi there!</title>
-    </head>
-    <body>
-        <p>Hi, {{name}}!</p>
-        <p>I'll get back to you as soon as possible.</p>
-        <p>Please click on the <a href="{{link}}">link</a> to confirm your email address</p>
-    </body>
-</html>
-"#;
-const EMAIL_SUBJECT: &str = "Hi there!";
 
 pub async fn func(common: &Common, event: Request) -> Result<Response<Body>, Error> {
     let contact_details = match ContactDetails::try_from(event) {
@@ -50,16 +34,12 @@ pub async fn func(common: &Common, event: Request) -> Result<Response<Body>, Err
             .map_err(Box::new)?);
     }
     
-    let resp = resp?;
-    
-    let email = domain::email::Email::new(
-        &contact_details,
-        EMAIL_SUBJECT.to_string(),
-        EMAIL_TEMPLATE.to_string()
-            .replace("{{name}}", &contact_details.name)
-            .replace("{{link}}", format!("https://simulevski.at/confirm/{}", resp).as_str())
-    );
-    let _email = common.email_service.send_email(&email).await;
+    if let Err(e) = common.email_service.send_email(&contact_details, resp?).await {
+        return Ok(Response::builder()
+            .status(500)
+            .body(format!("Internal Server Error: {}", e).into())
+            .map_err(Box::new)?);
+    }
 
     Ok(Response::builder()
         .status(200)

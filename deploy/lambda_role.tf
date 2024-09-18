@@ -50,22 +50,23 @@ resource "aws_iam_role_policy_attachment" "dynamodb" {
 }
 
 data "aws_iam_policy_document" "ses" {
-    statement {
-        effect = "Allow"
-        actions = [
-        "ses:SendEmail",
-        ]
-        resources = ["*"]
-    }
+  statement {
+    effect = "Allow"
+    actions = [
+      "ses:SendEmail",
+      "ses:SendRawEmail"
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_policy" "ses" {
-    name   = "allow_ses_for_contact_me"
-    path   = "/"
-    policy = data.aws_iam_policy_document.ses.json
+  name   = "allow_ses_for_contact_me"
+  path   = "/"
+  policy = data.aws_iam_policy_document.ses.json
 }
 
 resource "aws_iam_role_policy_attachment" "ses" {
-    role       = aws_iam_role.iam_for_lambda.name
-    policy_arn = aws_iam_policy.ses.arn
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = aws_iam_policy.ses.arn
 }
