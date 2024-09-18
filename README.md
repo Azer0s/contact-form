@@ -13,6 +13,6 @@ This will also generate an IAM role for the function. This role needs to be able
 - [x] Add a terraform script
   - [x] Create a DynamoDB table
   - [ ] Build the function
-  - [ ] Deploy the function
-  - [ ] Add the IAM role to the function
+  - [x] Deploy the function
+  - [x] Add the IAM role to the function
   - [ ] Add the function to the API Gateway

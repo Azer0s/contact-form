@@ -31,19 +31,19 @@ impl Service for AmazonSesEmailService {
     async fn send_email(&self, email: &Email) -> anyhow::Result<()> {
         let mut dest: Destination = Destination::builder().build();
         dest.to_addresses = Some(vec![email.to.clone()]);
-        
+
         let subject_content = Content::builder()
             .data(email.subject.clone())
             .charset("UTF-8")
             .build()
             .expect("building Content");
-        
+
         let body_content = Content::builder()
             .data(email.body.clone())
             .charset("UTF-8")
             .build()
             .expect("building Content");
-        let body = Body::builder().text(body_content).build();
+        let body = Body::builder().html(body_content).build();
 
         let msg = Message::builder()
             .subject(subject_content)
@@ -59,7 +59,7 @@ impl Service for AmazonSesEmailService {
             .content(email_content)
             .send()
             .await?;
-        
+
         if resp.message_id.is_some() {
             Ok(())
         } else {

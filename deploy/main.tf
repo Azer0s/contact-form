@@ -1,20 +1,16 @@
-variable "region" {
-  default = "eu-central-1"
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+    }
+  }
 }
 
 provider "aws" {
-  region = var.region
-}
-
-resource "aws_dynamodb_table" "dynamodb_table" {
-  name           = "contact_form_messages"
-  hash_key       = "id"
-  read_capacity  = 1
-  write_capacity = 1
-
-  attribute {
-    name = "id"
-    type = "S"
+  default_tags {
+    tags = {
+      Project = var.project_name
+    }
   }
 }
 
