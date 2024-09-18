@@ -10,10 +10,10 @@ pub struct ContactDetails {
     pub message: String,
 }
 
-impl TryFrom<Request> for ContactDetails {
+impl TryFrom<&Request> for ContactDetails {
     type Error = SerializationError;
 
-    fn try_from(req: Request) -> Result<Self, Self::Error> {
+    fn try_from(req: &Request) -> Result<Self, Self::Error> {
         let body = req.body();
         let contact_details: Result<ContactDetails, _> = serde_json::from_slice(body.as_ref());
 

@@ -7,4 +7,16 @@ resource "aws_lambda_function" "main" {
   s3_bucket     = aws_s3_bucket.contact_me_lambda_bucket.bucket
   s3_key        = aws_s3_object.contact_me_lambda_zip.key
   source_code_hash = filemd5(local.filename)
+
+  environment {
+    variables = {
+      TABLE_NAME       = aws_dynamodb_table.main.name
+      SENDER_NAME      = var.application_sender_name
+      SENDER_FIRSTNAME = var.application_sender_firstname
+      SENDER_EMAIL     = var.application_sender_email
+      FROM_NAME        = var.application_from_name
+      FROM_EMAIL       = var.application_from_email
+      EMAIL_SUBJECT    = var.application_email_subject
+    }
+  }
 }

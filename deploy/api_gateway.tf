@@ -1,11 +1,12 @@
 resource "aws_apigatewayv2_api" "main" {
-  name          = "portfolio-site-api"
+  name          = var.api_name
   protocol_type = "HTTP"
 }
 
 resource "aws_apigatewayv2_stage" "main" {
-  api_id = aws_apigatewayv2_api.main.id
-  name   = "main"
+  api_id      = aws_apigatewayv2_api.main.id
+  name        = "main"
+  auto_deploy = true
 }
 
 resource "aws_apigatewayv2_integration" "main" {
@@ -28,4 +29,18 @@ resource "aws_lambda_permission" "lambda_permission" {
   function_name = aws_lambda_function.main.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.main.execution_arn}/*"
+}
+
+resource "aws_apigatewayv2_deployment" "main" {
+  depends_on = [aws_apigatewayv2_route.main]
+
+  api_id = aws_apigatewayv2_api.main.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+output "api_gateway_url" {
+  value = join("", [aws_apigatewayv2_api.main.api_endpoint, "/", aws_apigatewayv2_stage.main.name])
 }

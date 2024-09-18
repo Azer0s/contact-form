@@ -2,12 +2,21 @@
 
 A simple contact form for my portfolio site made in Rust for AWS Lambda.
 
+## Initial Setup
+
 ```
-cargo lambda build --release
-cargo lambda deploy --region eu-central-1 --enable-function-url 
+cd deploy
+./tf-init.sh
 ```
 
-This will also generate an IAM role for the function. This role needs to be able to PutItem to the DynamoDB table and be able to send emails via SES.
+## Deploying
+
+```
+cd deploy
+terraform apply
+```
+
+This will deploy the function to AWS Lambda, create a DynamoDB table, create the API Gateway endpoint for it, create IAM rules for the function (to allow it to write to the DynamoDB table and send emails via SES) and deploy the API Gateway stage.
 
 ## TODO
 - [x] Add a terraform script
@@ -16,3 +25,4 @@ This will also generate an IAM role for the function. This role needs to be able
   - [x] Deploy the function
   - [x] Add the IAM role to the function
   - [x] Add the function to the API Gateway
+- [ ] Add the verification endpoint (just the GET method of the function)

@@ -4,7 +4,7 @@ use crate::domain::serialization_error::SerializationError;
 use lambda_http::{Body, Error, Request, Response};
 
 pub async fn func(common: &Common, event: Request) -> Result<Response<Body>, Error> {
-    let contact_details = match ContactDetails::try_from(event) {
+    let contact_details = match ContactDetails::try_from(&event) {
         Ok(contact_details) => contact_details,
         Err(SerializationError::NameEmpty) => {
             return Ok(Response::builder()
@@ -34,7 +34,7 @@ pub async fn func(common: &Common, event: Request) -> Result<Response<Body>, Err
             .map_err(Box::new)?);
     }
     
-    if let Err(e) = common.email_service.send_email(&contact_details, resp?).await {
+    if let Err(e) = common.email_service.send_email(&contact_details, event.uri(), resp?).await {
         return Ok(Response::builder()
             .status(500)
             .body(format!("Internal Server Error: {}", e).into())

@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "main" {
-  name           = "contact_form_messages"
+  name           = var.table_name
   hash_key       = "id"
   read_capacity  = 1
   write_capacity = 1

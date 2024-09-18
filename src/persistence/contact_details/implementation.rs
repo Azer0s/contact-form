@@ -4,16 +4,16 @@ use async_trait::async_trait;
 use aws_sdk_dynamodb::types::AttributeValue;
 use aws_sdk_dynamodb::Client;
 
-const DYNAMO_DB_TABLE_NAME: &str = "contact_form_messages";
-
 pub struct DynamoDbRepository {
     pub(crate) db: Client,
+    pub(crate) table_name: String,
 }
 
 impl DynamoDbRepository {
-    pub fn new(db: Client) -> DynamoDbRepository {
+    pub fn new(db: Client, table_name: String) -> DynamoDbRepository {
         DynamoDbRepository {
-            db
+            db,
+            table_name,
         }
     }
 }
@@ -25,7 +25,7 @@ impl Repository for DynamoDbRepository {
 
         self.db.
             put_item()
-            .table_name(DYNAMO_DB_TABLE_NAME.to_string())
+            .table_name(&self.table_name)
             .item("id", AttributeValue::S(id.clone()))
             .item("email", AttributeValue::S(contact_details.email.clone()))
             .item("name", AttributeValue::S(contact_details.name.clone()))

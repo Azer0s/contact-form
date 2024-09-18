@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
-  name               = "contact_me_lambda_role"
+  name               = var.lambda_role_name
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
@@ -39,7 +39,7 @@ data "aws_iam_policy_document" "dynamodb" {
 }
 
 resource "aws_iam_policy" "dynamodb" {
-  name   = "allow_dynamodb_for_contact_me"
+  name   = var.lambda_dynamodb_policy_name
   path   = "/"
   policy = data.aws_iam_policy_document.dynamodb.json
 }
@@ -61,7 +61,7 @@ data "aws_iam_policy_document" "ses" {
 }
 
 resource "aws_iam_policy" "ses" {
-  name   = "allow_ses_for_contact_me"
+  name   = var.lambda_ses_policy_name
   path   = "/"
   policy = data.aws_iam_policy_document.ses.json
 }

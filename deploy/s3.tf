@@ -30,7 +30,7 @@ resource "terraform_data" "build_lambda" {
 }
 
 resource "aws_s3_bucket" "contact_me_lambda_bucket" {
-  bucket = "contact-me-lambda-bucket"
+  bucket = var.bucket_name
 }
 
 resource "aws_s3_object" "contact_me_lambda_zip" {
