@@ -7,7 +7,7 @@ cargo lambda build --release
 cargo lambda deploy --region eu-central-1 --enable-function-url 
 ```
 
-This will also generate an IAM role for the function. This role needs to be able to PutItem to the DynamoDB table.
+This will also generate an IAM role for the function. This role needs to be able to PutItem to the DynamoDB table and be able to send emails via SES.
 
 ## TODO
 - [x] Add a terraform script

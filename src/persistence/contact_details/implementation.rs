@@ -1,17 +1,17 @@
 use crate::domain::contact_details::ContactDetails;
+use crate::persistence::contact_details::Repository;
+use async_trait::async_trait;
 use aws_sdk_dynamodb::types::AttributeValue;
 use aws_sdk_dynamodb::Client;
-use std::error::Error;
-use std::sync::Arc;
-use async_trait::async_trait;
-use crate::persistence::contact_details::Repository;
+
+const DYNAMO_DB_TABLE_NAME: &str = "contact_form_messages";
 
 pub struct DynamoDbRepository {
-    pub(crate) db: Arc<Client>,
+    pub(crate) db: Client,
 }
 
 impl DynamoDbRepository {
-    pub fn new(db: Arc<Client>) -> DynamoDbRepository {
+    pub fn new(db: Client) -> DynamoDbRepository {
         DynamoDbRepository {
             db
         }
@@ -20,12 +20,12 @@ impl DynamoDbRepository {
 
 #[async_trait]
 impl Repository for DynamoDbRepository {
-    async fn create(&self, contact_details: &ContactDetails) -> Result<String, Box<dyn Error>> {
+    async fn create(&self, contact_details: &ContactDetails) -> anyhow::Result<String> {
         let id = uuid::Uuid::new_v4().to_string();
 
         self.db.
             put_item()
-            .table_name("contact_form_messages")
+            .table_name(DYNAMO_DB_TABLE_NAME.to_string())
             .item("id", AttributeValue::S(id.clone()))
             .item("email", AttributeValue::S(contact_details.email.clone()))
             .item("name", AttributeValue::S(contact_details.name.clone()))
@@ -41,7 +41,7 @@ pub struct MockRepository;
 
 #[async_trait]
 impl Repository for MockRepository {
-    async fn create(&self, _contact_details: &ContactDetails) -> Result<String, Box<dyn Error>> {
+    async fn create(&self, _contact_details: &ContactDetails) -> anyhow::Result<String> {
         println!("MockRepository::create");
         Ok("mock-id".to_string())
     }
