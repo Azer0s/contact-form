@@ -24,6 +24,7 @@ async fn main() -> Result<(), Error> {
         subject: env::var("EMAIL_SUBJECT")?,
         from_name: env::var("FROM_NAME").unwrap_or(env::var("SENDER_NAME")?),
         from: env::var("FROM_EMAIL").unwrap_or(env::var("SENDER_EMAIL")?),
+        receiver: env::var("RECEIVER_EMAIL")?,
     };
 
     let sdk_config = aws_config::load_defaults(BehaviorVersion::latest()).await;

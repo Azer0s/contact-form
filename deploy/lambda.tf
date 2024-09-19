@@ -17,6 +17,7 @@ resource "aws_lambda_function" "main" {
       FROM_NAME        = var.application_from_name
       FROM_EMAIL       = var.application_from_email
       EMAIL_SUBJECT    = var.application_email_subject
+      RECEIVER_EMAIL   = var.application_receiver_email
     }
   }
 }

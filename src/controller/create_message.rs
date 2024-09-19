@@ -2,6 +2,7 @@ use crate::common::Common;
 use crate::domain::contact_details::ContactDetails;
 use crate::domain::serialization_error::SerializationError;
 use lambda_http::{Body, Error, Request, Response};
+use crate::try_or_status_code;
 
 pub async fn func(common: &Common, event: Request) -> Result<Response<Body>, Error> {
     let contact_details = match ContactDetails::try_from(&event) {
@@ -21,20 +22,9 @@ pub async fn func(common: &Common, event: Request) -> Result<Response<Body>, Err
     };
 
     let resp = common.contact_details_repository.create(&contact_details).await;
-
-    if let Err(e) = resp {
-        println!("Error: {}", e);
-        if let Some(err) = e.source() {
-            println!("Caused by: {}", err);
-        }
-
-        return Ok(Response::builder()
-            .status(500)
-            .body(format!("Internal Server Error: {}", e).into())
-            .map_err(Box::new)?);
-    }
+    let resp = try_or_status_code!(resp, 500);
     
-    if let Err(e) = common.email_service.send_email(&contact_details, event.uri(), resp?).await {
+    if let Err(e) = common.email_service.send_confirmation_email_to_sender(&contact_details, event.uri(), resp).await {
         return Ok(Response::builder()
             .status(500)
             .body(format!("Internal Server Error: {}", e).into())

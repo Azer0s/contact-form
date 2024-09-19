@@ -32,7 +32,8 @@ data "aws_iam_policy_document" "dynamodb" {
       "dynamodb:GetItem",
       "dynamodb:Scan",
       "dynamodb:Query",
-      "dynamodb:UpdateItem"
+      "dynamodb:UpdateItem",
+      "dynamodb:DeleteItem"
     ]
     resources = [aws_dynamodb_table.main.arn]
   }

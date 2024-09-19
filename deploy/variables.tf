@@ -67,3 +67,8 @@ variable "application_email_subject" {
     type = string
     default = "Hi there!"
 }
+
+variable "application_receiver_email" {
+    type = string
+    default = "ariel@simulevski.at"
+}
